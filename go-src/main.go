@@ -16,6 +16,11 @@ type pr struct {
 	Title string
 }
 
+type inpr struct {
+	Name  string
+	Link  string
+	Title string
+}
 type participant struct {
 	Name string
 	Prs  []pr
@@ -71,18 +76,17 @@ func insertParticipant(c *gin.Context) {
 
 func insertPr(c *gin.Context) {
 	coll := conn()
-	name := c.Param("name")
-	title := c.Param("title")
-	href := c.Param("href")
+	var newpr inpr
+	c.BindJSON(&newpr)
 	npr := pr{
-		Title: title,
-		Link:  href,
+		Title: newpr.Title,
+		Link:  newpr.Link,
 	}
-	cpa := coll.FindOne(context.TODO(), bson.D{{Key: "name", Value: name}})
+	cpa := coll.FindOne(context.TODO(), bson.D{{Key: "name", Value: newpr.Name}})
 	var res participant
 	cpa.Decode(&res)
 	res.Prs = append(res.Prs, npr)
-	_, err := coll.ReplaceOne(context.TODO(), bson.D{{Key: "name", Value: name}}, res)
+	_, err := coll.ReplaceOne(context.TODO(), bson.D{{Key: "name", Value: newpr.Name}}, res)
 	if err != nil {
 		panic(err)
 	}
@@ -91,7 +95,7 @@ func insertPr(c *gin.Context) {
 func main() {
 	router := gin.Default()
 	router.GET("/all", getAll)
-	router.GET("/inuser/:name", insertParticipant)
-	router.POST("/inpr/:name/:title/:href", insertPr)
+	router.POST("/inuser/:name", insertParticipant)
+	router.POST("/inpr", insertPr)
 	router.Run("localhost:8080")
 }

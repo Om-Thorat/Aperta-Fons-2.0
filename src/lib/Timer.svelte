@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import Cta from "./Cta.svelte";
     let days = "99";
     let hours = "99";
     let mins = "99";
@@ -21,9 +22,14 @@
     onMount(countdown)
 </script>
 
-<div class="flex flex-col gap-3 items-start w-[50%]">
+<div class="flex flex-row gap-3 w-[50%] items-center">
+    <div class="w-1/2 h-full flex flex-row gap-7 justify-start items-end">
+        <Cta />
+    </div>
+    <div class="w-1/2 flex flex-col gap-3 items-end mr-10">
     <span class="text-lg">The contest is live until</span>
     <span class="text-5xl font-mono font-extrabold">
         {days}:{hours}:{mins}:{secs}
     </span>
+    </div>
 </div>
