@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Dash from "./lib/Dash.svelte";
   import Hero from "./lib/Hero.svelte";
   import Timer from "./lib/Timer.svelte";
 
@@ -17,6 +18,6 @@
     <Hero />
     <Timer final="31 dec 2023" />
   {:else if currstate=="dashboard"}
-    <span>Dashboard here</span>
+    <Dash />
   {/if}
 </main>

@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -27,14 +27,13 @@ type participant struct {
 }
 
 func conn() *mongo.Collection {
-	uri := "xxxx"
+	uri := "mongodb+srv://om:fFm8snrFI1ZrXI2W@track01.debfrj4.mongodb.net/?retryWrites=true&w=majority"
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		panic(err)
 	}
 
 	coll := client.Database("aperta").Collection("participants")
-	fmt.Println("huh")
 	return coll
 }
 
@@ -94,6 +93,9 @@ func insertPr(c *gin.Context) {
 
 func main() {
 	router := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:5173"}
+	router.Use(cors.New(config))
 	router.GET("/all", getAll)
 	router.POST("/inuser/:name", insertParticipant)
 	router.POST("/inpr", insertPr)
