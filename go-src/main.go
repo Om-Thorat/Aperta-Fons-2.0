@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
+	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -14,12 +16,14 @@ import (
 type pr struct {
 	Link  string
 	Title string
+	ID    string
 }
 
 type inpr struct {
-	Name  string
-	Link  string
-	Title string
+	Name  string `json:"name" binding:"required"`
+	Link  string `json:"link" binding:"required"`
+	Title string `json:"title" binding:"required"`
+	ID    string `json:"id" binding:"required"`
 }
 type participant struct {
 	Name string
@@ -27,14 +31,17 @@ type participant struct {
 }
 
 func conn() *mongo.Collection {
-	uri := "xxxx"
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(err)
+	}
+	uri := os.Getenv("URI")
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		panic(err)
 	}
 
 	coll := client.Database("aperta").Collection("participants")
-	fmt.Println("huh")
 	return coll
 }
 
@@ -67,6 +74,7 @@ func insertParticipant(c *gin.Context) {
 	name := c.Param("name")
 	npar := participant{
 		Name: name,
+		Prs:  []pr{},
 	}
 	_, err := coll.InsertOne(context.TODO(), npar)
 	if err != nil {
@@ -77,16 +85,24 @@ func insertParticipant(c *gin.Context) {
 func insertPr(c *gin.Context) {
 	coll := conn()
 	var newpr inpr
-	c.BindJSON(&newpr)
+	err := c.BindJSON(&newpr)
+	if err != nil {
+		panic(err)
+	}
 	npr := pr{
 		Title: newpr.Title,
 		Link:  newpr.Link,
+		ID:    newpr.ID,
 	}
 	cpa := coll.FindOne(context.TODO(), bson.D{{Key: "name", Value: newpr.Name}})
 	var res participant
 	cpa.Decode(&res)
-	res.Prs = append(res.Prs, npr)
-	_, err := coll.ReplaceOne(context.TODO(), bson.D{{Key: "name", Value: newpr.Name}}, res)
+	if res.Prs != nil {
+		res.Prs = append(res.Prs, npr)
+	} else {
+		res.Prs = []pr{npr}
+	}
+	_, err = coll.ReplaceOne(context.TODO(), bson.D{{Key: "name", Value: newpr.Name}}, res)
 	if err != nil {
 		panic(err)
 	}
@@ -94,6 +110,9 @@ func insertPr(c *gin.Context) {
 
 func main() {
 	router := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:5173"}
+	router.Use(cors.New(config))
 	router.GET("/all", getAll)
 	router.POST("/inuser/:name", insertParticipant)
 	router.POST("/inpr", insertPr)
