@@ -25,6 +25,7 @@ type inpr struct {
 	Title string `json:"title" binding:"required"`
 	ID    string `json:"id" binding:"required"`
 }
+
 type participant struct {
 	Name string
 	Prs  []pr
@@ -67,6 +68,14 @@ func getAll(c *gin.Context) {
 		panic(err)
 	}
 	c.IndentedJSON(http.StatusOK, outputs)
+}
+
+func getUser(c *gin.Context) {
+	coll := conn()
+	var output participant
+	result := coll.FindOne(context.TODO(), bson.D{{Key: "name", Value: c.Param("name")}})
+	result.Decode(&output)
+	c.IndentedJSON(http.StatusOK, output)
 }
 
 func insertParticipant(c *gin.Context) {
@@ -115,6 +124,7 @@ func main() {
 	router.Use(cors.New(config))
 	router.GET("/all", getAll)
 	router.POST("/inuser/:name", insertParticipant)
+	router.GET("/getuser/:name", getUser)
 	router.POST("/inpr", insertPr)
 	router.Run("localhost:8080")
 }

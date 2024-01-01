@@ -1,6 +1,6 @@
 <script lang="ts">
   import Dash from "./lib/Dash.svelte";
-import Hero from "./lib/Hero.svelte";
+  import Hero from "./lib/Hero.svelte";
   import Timer from "./lib/Timer.svelte";
 
   
