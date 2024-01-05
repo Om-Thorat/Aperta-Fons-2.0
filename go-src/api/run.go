@@ -140,13 +140,16 @@ func init() {
 	// router.StaticFS("/assets", http.Dir("build/assets"))
 	// // router.GET("/assets/:p", static)
 	// router.GET("/", home)
-	router.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "Hello!")
-	})
-	router.GET("/all", getAll)
-	router.POST("/inuser/:name", insertParticipant)
-	router.GET("/getuser/:name", getUser)
-	router.POST("/inpr", insertPr)
+	api := router.Group("/api")
+	{
+		api.GET("/", func(c *gin.Context) {
+			c.String(http.StatusOK, "Hello!")
+		})
+		api.GET("/all", getAll)
+		api.POST("/inuser/:name", insertParticipant)
+		api.GET("/getuser/:name", getUser)
+		api.POST("/inpr", insertPr)
+	}
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
