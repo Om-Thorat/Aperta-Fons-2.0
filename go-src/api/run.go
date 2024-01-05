@@ -1,4 +1,4 @@
-package main
+package run
 
 import (
 	"context"
@@ -51,6 +51,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	router.ServeHTTP(w, r)
 }
 
-func main() {
+func run() {
 	router.Run("localhost:8080")
 }
