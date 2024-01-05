@@ -140,6 +140,9 @@ func init() {
 	// router.StaticFS("/assets", http.Dir("build/assets"))
 	// // router.GET("/assets/:p", static)
 	// router.GET("/", home)
+	router.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Hello!")
+	})
 	router.GET("/all", getAll)
 	router.POST("/inuser/:name", insertParticipant)
 	router.GET("/getuser/:name", getUser)
