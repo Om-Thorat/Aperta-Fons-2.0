@@ -1,8 +1,11 @@
 <script>
-// @ts-nocheck
+  import { onMount } from "svelte";
+
+    // @ts-nocheck
     import { origin } from "../store";
     let pars;
     let vis = false;
+    let user;
     async function getpars(){
         let s = await fetch(`${origin}/all`);
         pars = await s.json();
@@ -10,11 +13,11 @@
         vis = true
     }
     async function syncprs() {
-        let l = await fetch(`${origin}/getuser/om-thorat`)
+        let l = await fetch(`${origin}/getuser/${user}`)
         l = await l.json();
         let m = l.Prs[l.Prs.length-1]
         console.log(m);
-        let prs = await fetch("https://api.github.com/search/issues?q=state%3Aclosed+author%3Aom-thorat+type%3Apr")
+        let prs = await fetch("https://api.github.com/search/issues?q=state%3Aclosed+author%3A${user}+type%3Apr")
         prs = await prs.json();
         console.log(prs);
         let prl = prs.items;
@@ -44,6 +47,7 @@
         }
     }
     getpars()
+    onMount(()=>{user=localStorage.getItem("user")})
 </script>
 
 

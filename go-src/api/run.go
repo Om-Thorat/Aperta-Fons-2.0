@@ -136,10 +136,6 @@ func init() {
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:5173"}
 	router.Use(cors.New(config))
-	// router.LoadHTMLFiles("build/index.html")
-	// router.StaticFS("/assets", http.Dir("build/assets"))
-	// // router.GET("/assets/:p", static)
-	// router.GET("/", home)
 	api := router.Group("/api")
 	{
 		api.GET("/", func(c *gin.Context) {
@@ -156,6 +152,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	router.ServeHTTP(w, r)
 }
 
-func run() {
+func Uh() {
 	router.Run("localhost:8080")
 }
