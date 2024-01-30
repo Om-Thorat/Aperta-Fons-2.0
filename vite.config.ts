@@ -5,6 +5,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 export default defineConfig({
   plugins: [svelte()],
   build:{
-    outDir: './go-src/api/build/'
+    outDir: './go-src/',
+    emptyOutDir: false,
   }
 })
