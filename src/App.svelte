@@ -6,14 +6,21 @@
   import { onMount } from "svelte";
 
   let currstate:string;
-  import { state } from './store';
+  import { state,origin } from './store';
 
   state.subscribe((e)=>{
     currstate = e;
     console.log(currstate)
   })
 
-  onMount(()=>{localStorage.getItem("user") ? console.log("loggedin") : document.getElementById("login").showModal()})
+  onMount(()=>{
+    if (window.location.href.includes("localhost")){
+      // do nothing;
+    } else {
+      origin.set(window.location.href)
+    };
+    localStorage.getItem("user") ? console.log("loggedin") : document.getElementById("login").showModal();
+  })
 </script>
 
 <main class="bg-black h-[100svh] flex flex-col items-center gap-4">

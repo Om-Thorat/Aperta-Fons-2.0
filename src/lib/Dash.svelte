@@ -1,19 +1,21 @@
 <script>
-  import { onMount } from "svelte";
+// @ts-nocheck
 
-    // @ts-nocheck
+    import { onMount } from "svelte";
     import { origin } from "../store";
     let pars;
+    let currorigin = "";
     let vis = false;
     let user;
     async function getpars(){
-        let s = await fetch(`${origin}/all`);
+        console.log(`${currorigin}/api/all`);
+        let s = await fetch(`${currorigin}/api/all`);
         pars = await s.json();
         console.log(pars)
         vis = true
     }
     async function syncprs() {
-        let l = await fetch(`${origin}/getuser/${user}`)
+        let l = await fetch(`${currorigin}/api/getuser/${user}`)
         l = await l.json();
         let m = l.Prs[l.Prs.length-1]
         console.log(m);
@@ -31,7 +33,7 @@
           if(n>t){
             console.log("nice");
             console.log(prl[i]);
-            fetch(`${origin}/inpr`, {
+            fetch(`${currorigin}/api/inpr`, {
                 method: "POST",
                 body: JSON.stringify({
                     Name: prl[i].user.login.toLowerCase(),
@@ -46,8 +48,15 @@
           }
         }
     }
-    getpars()
-    onMount(()=>{user=localStorage.getItem("user")})
+    function init(){
+        user = localStorage.getItem("user");
+        origin.subscribe((e)=>{
+            currorigin = e;
+            console.log(currorigin)
+        })
+        getpars()
+    }
+    onMount(init);
 </script>
 
 
